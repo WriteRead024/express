@@ -82,6 +82,22 @@ describe('res', function () {
         .end(done)
     })
 
+    it('should append an array to an existing single value', function (done) {
+      var app = express()
+
+      app.use(function (req, res) {
+        res.set('Set-Cookie', 'foo=bar')
+        res.append('Set-Cookie', ['fizz=buzz', 'pet=tobi'])
+        res.end()
+      })
+
+      request(app)
+        .get('/')
+        .expect(200)
+        .expect(shouldHaveHeaderValues('Set-Cookie', ['foo=bar', 'fizz=buzz', 'pet=tobi']))
+        .end(done)
+    })
+
     it('should work together with res.cookie', function (done) {
       var app = express()
 
@@ -108,7 +124,7 @@ function shouldHaveHeaderValues (key, values) {
   return function (res) {
     var headers = res.headers[key.toLowerCase()]
     assert.ok(headers, 'should have header "' + key + '"')
-    assert.strictEqual(headers.length, values.length, 'should have ' + values.length + ' occurances of "' + key + '"')
+    assert.strictEqual(headers.length, values.length, 'should have ' + values.length + ' occurrences of "' + key + '"')
     for (var i = 0; i < values.length; i++) {
       assert.strictEqual(headers[i], values[i])
     }
